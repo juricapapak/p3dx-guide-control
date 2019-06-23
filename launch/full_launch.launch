@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="robot_name" default="pioneer"/>
+
+  <include file="$(find ariac_environment)/launch/ariac_p3dx.launch"/>
+
+  <!-- Get fake localization data as a transform -->
+    <node pkg="fake_localization" type="fake_localization" name="fakeloc">
+      <param name="odom_frame_id" value="odom"/>
+      <param name="global_frame_id" value="map"/>
+      <param name="base_frame_id" value="base_link"/>
+      <remap from="base_pose_ground_truth" to="odom"/>
+    </node>
+
+    <!--<node pkg="map_server" type="map_server" name="map_server"
+          args="$(find ariac_environment)/maps/ariac.yaml">
+      <param name="frame_id" value="$(arg robot_name)/map"/>
+    </node>-->
+
+  <include file="$(find ariac_environment)/launch/rviz.launch">
+    <arg name="config" value="localization"/>
+  </include>
+
+  <include file="$(find ariac_environment)/launch/upload_actor.xml">
+    <arg name="actor_name" default="actor1"/>
+    <arg name="start_x" default="8"/>
+    <arg name="start_y" default="9.6"/>
+    <arg name="end_x" default="13.0"/>
+    <arg name="end_y" default="7.0"/>
+    <arg name="inc" default="0"/>
+  </include>
+
+  <node name="guide_controller" pkg="guide_control" type="guide_control"
+	output = "screen"/>
+
+  <!--<include file="$(find ariac_environment)/launch/upload_actor.xml">
+    <arg name="actor_name" default="actor2"/>
+    <arg name="start_x" default="20.0"/>
+    <arg name="start_y" default="5.0"/>
+    <arg name="end_x" default="13.0"/>
+    <arg name="end_y" default="7.0"/>
+    <arg name="inc" default="0"/>
+  </include>
+
+  <include file="$(find ariac_environment)/launch/upload_actor.xml">
+    <arg name="actor_name" default="actor3"/>
+    <arg name="start_x" default="12.0"/>
+    <arg name="start_y" default="12.0"/>
+    <arg name="end_x" default="13.0"/>
+    <arg name="end_y" default="7.0"/>
+    <arg name="inc" default="0"/>
+  </include>-->
+
+  <!--<include file="$(find obstacle_evasion)/launch/purepursuit.launch"/>-->
+
+  <include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    <arg name="time" value="20"/>
+    <arg name="pkg" value="ariac_environment"/>
+    <arg name="file" value="detect_obstacles.launch"/>
+  </include>
+
+  <!--<include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    <arg name="time" value="20"/>
+    <arg name="pkg" value="obstacle_evasion"/>
+    <arg name="file" value="pub_test_path.launch"/>
+  </include>-->
+
+</launch>
