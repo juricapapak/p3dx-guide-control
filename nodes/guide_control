@@ -7,7 +7,7 @@ import sys
 import rospy
 import numpy as np
 import tf
-import copy
+import tf2_ros
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from obstacle_detector.msg import Obstacles, CircleObstacle
@@ -39,6 +39,9 @@ robot_angle = 0 # [-pi, pi]
 
 # publisher for cmd_vel
 cmd_vel_pub = None
+
+# buffer for transformations
+tf_buffer = None
 
 # sigmoid defined around keeping the actor at the GUIDE_DISTANCE
 def sigmoid(x):
@@ -73,14 +76,15 @@ def cmd_vel_callback(cmd_vel):
 
 # for updating the robot position
 def odom_callback(odom):
-    global robot_loc_x, robot_loc_y, robot_angle
-    pose = odom.pose.pose
+    global robot_loc_x, robot_loc_y, robot_angle, tf_buffer
 
-    robot_loc_x = pose.position.x
-    robot_loc_y = pose.position.y
+    trans = tf_buffer.lookup_transform('map', 'base_link', rospy.Time())
 
-    quaternion = (pose.orientation.x, pose.orientation.y, pose.orientation.z,
-                  pose.orientation.w)
+    robot_loc_x = trans.transform.translation.x
+    robot_loc_y = trans.transform.translation.y
+
+    quaternion = (trans.transform.rotation.x, trans.transform.rotation.y,
+                  trans.transform.rotation.z, trans.transform.rotation.w)
     euler = tf.transformations.euler_from_quaternion(quaternion)
     robot_angle = euler[2] # yaw angle used for robot heading
 
@@ -135,13 +139,18 @@ def get_robot():
 
 
 def main():
-    global guide_status, actor_loc_x, actor_loc_y, robot_loc_x, robot_loc_y, robot_angle, cmd_vel_pub
+    global guide_status, actor_loc_x, actor_loc_y, robot_loc_x, robot_loc_y, robot_angle, cmd_vel_pub, tf_buffer
 
     # initialize the node
     rospy.init_node('guide_control')
     mainloop_rate = rospy.Rate(1)
 
-    # determine initial robot
+    # setup transform buffer and wait for it to fill up
+    tf_buffer = tf2_ros.Buffer()
+    listener = tf2_ros.TransformListener(tf_buffer)
+    mainloop_rate.sleep()
+
+    # determine initial robot pose
     get_robot()
 
     # publisher/subscriber initialization
@@ -153,7 +162,7 @@ def main():
     print ("[GUIDE_CONTROL]: Initialization successful.")
     while(1):
         if guide_status == 1:
-            print(["[GUIDE_CONTROL]: actor tracked at (%f %f)" % (actor_loc_x, actor_loc_y)])
+            print("[GUIDE_CONTROL]: actor tracked at (%f %f)" % (actor_loc_x, actor_loc_y))
         elif guide_status == 0:
             if get_actor():
                 guide_status = 1
