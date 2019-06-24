@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <arg name="actor_name"/>
+  <arg name="start_x"/>
+  <arg name="start_y"/>
+  <arg name="end_x"/>
+  <arg name="end_y"/>
+  <arg name="inc"/>
+
+  <param name="$(arg actor_name)" textfile="$(find ariac_environment)/models/actor/model.sdf" />
+
+  <node name="$(arg actor_name)" pkg="gazebo_ros" type="spawn_model"
+  	args="-sdf -param $(arg actor_name) -model $(arg actor_name) -x $(arg start_x) -y $(arg start_y) -z 1.25">
+  </node>
+
+  <node name="drive_$(arg actor_name)" pkg="guide_control" type="actor_driver.py"
+  	args="$(arg actor_name) $(arg start_x) $(arg start_y)"
+	output = "screen"/>
+ 
+ </launch>

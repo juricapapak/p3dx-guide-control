@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <arg name="actor_name" default="actor1"/>
+
+  <node name="control_$(arg actor_name)" pkg="guide_control" type="actor_controller.py"
+  	args="$(arg actor_name)"
+	output = "screen"/>
+ 
+ </launch>

@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
+
+
+<!-- Launches everything except for the actor controller. -->
+
 <launch>
+
   <arg name="robot_name" default="pioneer"/>
 
   <include file="$(find ariac_environment)/launch/ariac_p3dx.launch"/>
@@ -21,7 +26,7 @@
     <arg name="config" value="localization"/>
   </include>
 
-  <include file="$(find ariac_environment)/launch/upload_actor.xml">
+  <include file="$(find guide_control)/launch/upload_actor.xml">
     <arg name="actor_name" default="actor1"/>
     <arg name="start_x" default="8"/>
     <arg name="start_y" default="9.6"/>
@@ -30,7 +35,7 @@
     <arg name="inc" default="0"/>
   </include>
 
-  <node name="guide_controller" pkg="guide_control" type="guide_control"
+  <node name="guide_controller" pkg="guide_control" type="guide_control.py"
 	output = "screen"/>
 
   <!--<include file="$(find ariac_environment)/launch/upload_actor.xml">
