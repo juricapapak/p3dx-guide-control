@@ -35,8 +35,12 @@
     <arg name="inc" default="0"/>
   </include>
 
-  <node name="guide_controller" pkg="guide_control" type="guide_control.py"
-	output = "screen"/>
+  <node name="guide_controller" pkg="guide_control" type="guide_control.py" output="screen">
+    <param name="~guide_distance" type="double" value="2"/>
+    <param name="~actor_tolerance" type="double" value="0.2"/>
+    <param name="~map_frame" value="map"/>
+    <param name="~robot_frame" value="base_link"/>
+  </node>
 
   <!--<include file="$(find ariac_environment)/launch/upload_actor.xml">
     <arg name="actor_name" default="actor2"/>
