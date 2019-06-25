@@ -14,5 +14,7 @@ The package is intended for usage with ROS2 packages `ros1_bridge` and `navigati
 
 - `ros1_bridge` (https://github.com/ros2/ros1_bridge)
 
--  `navigation2` (https://github.com/ros-planning/navigation2/)
-	 - Before compiling the package, in `dwb_controller.cpp` change `/cmd_vel` to `/cmd_vel_dwb`.
+- `navigation2` (https://github.com/ros-planning/navigation2/)
+
+
+Provided launch file for ROS2 requires completion of arguments `map_dir` (string, full path up to and including the `map.yaml` file) and `param_dir` (string, full path up to and including the `robot_params.yaml` file). The latter file format is as presented in https://github.com/ros-planning/navigation2/blob/master/nav2_bringup/launch/nav2_params.yaml, which can be used as-is for testing purposes.
