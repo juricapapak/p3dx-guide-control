@@ -78,8 +78,8 @@ class GuideController:
         self.correct_for_distance(cmd_vel, distance)
         # angle correction
         angle = np.arctan2(dist_vector[1], dist_vector[0])
-        wrapped_angle = self.wrap_to_pi(np.abs(robot_yaw - angle))
-        self.correct_for_angle(cmd_vel, wrapped_angle, robot_yaw)
+        wrapped_angle = self.wrap_to_pi(np.abs(self.robot_yaw - angle))
+        self.correct_for_angle(cmd_vel, wrapped_angle, self.robot_yaw)
 
         self.cmd_vel_pub.publish(cmd_vel)
 
