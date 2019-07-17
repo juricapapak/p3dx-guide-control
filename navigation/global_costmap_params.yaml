@@ -1,6 +1,6 @@
 global_costmap:
-  global_frame: map
-  robot_base_frame: base_link
+  global_frame: pioneer/map
+  robot_base_frame: pioneer/base_link
   update_frequency: 3.0
   static_map: true
   
