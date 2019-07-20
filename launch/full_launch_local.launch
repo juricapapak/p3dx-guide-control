@@ -23,7 +23,7 @@
       <param name="frame_id" value="$(arg robot_name)/map"/>
     </node>
 
-  <include file="$(find ariac_environment)/launch/rviz.launch">
+  <include file="$(find guide_control)/launch/rviz.launch">
     <arg name="config" value="localization"/>
   </include>
 
