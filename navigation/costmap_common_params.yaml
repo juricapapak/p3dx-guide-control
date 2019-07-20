@@ -7,4 +7,4 @@ transform_tolerance: 0.6
 footprint_padding: 0.01
 inflation_radius: 0.20
 observation_sources: scan
-scan: {sensor_frame: front_laser, data_type: LaserScan, topic: /front_laser, marking: true, clearing: true}
+scan: {sensor_frame: pioneer/front_laser, data_type: LaserScan, topic: /pioneer/front_laser, marking: true, clearing: true}

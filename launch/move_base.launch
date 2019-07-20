@@ -1,5 +1,6 @@
 <launch>
 
+  <arg name="robot_name" default="$(env ROBOT_NAME)"/>
     <!--- Run AMCL --> 
     <!--include file="$(find amcl)/examples/amcl_omni.launch" /-->
 
@@ -10,6 +11,7 @@
     <rosparam file="$(find guide_control)/navigation/global_costmap_params.yaml" command="load" /> 
     <rosparam file="$(find guide_control)/navigation/base_local_planner_params.yaml" command="load" />
     <remap from="cmd_vel" to="cmd_vel_dwb"/>
+    <remap from="odom" to="$(arg robot_name)/odom"/>
  </node>
 
 </launch> 

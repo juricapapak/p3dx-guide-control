@@ -27,6 +27,12 @@ The package can be used with ROS2 packages `ros1_bridge` and `navigation2`, but 
 ## ROS
 ## Simulation - launch sequence 
 
+**Note**: Before launching, the following environment variable must be set (in every terminal where nodes are launched):
+```
+export ROBOT_NAME=pioneer
+```
+Due to some hardcoded stuff, other `ROBOT_NAME` values will probably not work.
+
 ### 1st step - full_launch_local.launch
 
 Launches all the main simulation and utility nodes, including:

@@ -5,21 +5,22 @@
 
 <launch>
 
-  <arg name="robot_name" default="pioneer"/>
+  <arg name="robot_name" default="$(env ROBOT_NAME)"/>
+  <arg name="actor_name" default="actor1"/>
 
   <include file="$(find ariac_environment)/launch/ariac_p3dx.launch"/>
 
   <!-- Get fake localization data as a transform -->
     <node pkg="fake_localization" type="fake_localization" name="fakeloc">
-      <param name="odom_frame_id" value="odom"/>
-      <param name="global_frame_id" value="map"/>
-      <param name="base_frame_id" value="base_link"/>
-      <remap from="base_pose_ground_truth" to="odom"/>
+      <param name="odom_frame_id" value="$(arg robot_name)/odom"/>
+      <param name="global_frame_id" value="$(arg robot_name)/map"/>
+      <param name="base_frame_id" value="$(arg robot_name)/base_link"/>
+      <remap from="base_pose_ground_truth" to="$(arg robot_name)/odom"/>
     </node>
 
    <node pkg="map_server" type="map_server" name="map_server"
           args="$(find ariac_environment)/maps/ariac.yaml">
-      <param name="frame_id" value="map"/>
+      <param name="frame_id" value="$(arg robot_name)/map"/>
     </node>
 
   <include file="$(find ariac_environment)/launch/rviz.launch">
@@ -27,19 +28,21 @@
   </include>
 
   <include file="$(find guide_control)/launch/upload_actor.xml">
-    <arg name="actor_name" default="actor1"/>
-    <arg name="start_x" default="8"/>
-    <arg name="start_y" default="9.6"/>
-    <arg name="end_x" default="13.0"/>
-    <arg name="end_y" default="7.0"/>
-    <arg name="inc" default="0"/>
+    <arg name="actor_name" value="$(arg actor_name)"/>
+    <arg name="start_x" value="8"/>
+    <arg name="start_y" value="9.6"/>
+    <arg name="end_x" value="13.0"/>
+    <arg name="end_y" value="7.0"/>
+    <arg name="inc" value="0"/>
   </include>
 
   <node name="guide_controller" pkg="guide_control" type="guide_control.py" output="screen">
     <param name="~guide_distance" type="double" value="2"/>
     <param name="~actor_tolerance" type="double" value="0.2"/>
-    <param name="~map_frame" value="map"/>
-    <param name="~robot_frame" value="base_link"/>
+    <param name="~map_frame" value="$(arg robot_name)/map"/>
+    <param name="~robot_frame" value="$(arg robot_name)/base_link"/>
+    <remap from="odom" to="$(arg robot_name)/odom"/>
+    <remap from="cmd_vel" to="$(arg robot_name)/cmd_vel"/>
   </node>
 
   <include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">

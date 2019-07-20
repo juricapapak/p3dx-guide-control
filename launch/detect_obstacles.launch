@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="robot_name" default="pioneer"/>
+  <arg name="robot_name" default="$(env ROBOT_NAME)"/>
 
   <!-- Merge front and back laser into topic "/scan" -->
   <node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger">
-    <param name="destination_frame" value="base_link"/>
+    <param name="destination_frame" value="$(arg robot_name)/base_link"/>
     <param name="cloud_destination_topic" value="/merged_cloud"/>
     <param name="scan_destination_topic" value="/scan"/>
-    <param name="laserscan_topics" value ="/front_laser /back_laser" />
+    <param name="laserscan_topics"
+           value ="/$(arg robot_name)/front_laser /$(arg robot_name)/back_laser" />
   </node>
 
   <!-- Reconfigure min and max angle of result "/scan" topic -->
@@ -36,7 +37,7 @@
 
     <!-- <remap from="/scan" to="/bravo/scan"/> -->
 
-    <param name="frame_id"             value="/map"/>
+    <param name="frame_id"             value="$(arg robot_name)/map"/>
   </node>
 
   <node name="obstacle_tracker" pkg="obstacle_detector" type="obstacle_tracker_node">
@@ -50,7 +51,7 @@
     <param name="process_rate_variance"   value="0.1"/>
     <param name="measurement_variance"    value="1.0"/>
 
-    <param name="frame_id"                value="/map"/>
+    <param name="frame_id"                value="$(arg robot_name)/map"/>
 
     <remap from="tracked_obstacles" to="obstacles"/>
   </node>
