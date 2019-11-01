@@ -5,7 +5,7 @@ import termios
 import tty
 import rospy
 
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Twist
 
 disp = """
 Actor controller
@@ -15,8 +15,8 @@ Moving around:
    a         d
         s
 
-w/s - control movement along y axis (increments of 0.1 [m/s])
-a/d - control movement along x axis (increments of 0.1 [m/s])
+w/s - control movement forward/backward (increments of 0.1 [m/s])
+a/d - control turning left/right (+-1 [rad/s] on press)
 
 space key, x : force stop
 
@@ -26,7 +26,8 @@ CTRL-C to quit
 e = """
 Communications Failed
 """
-VELOCITY_STEP = 0.1
+LIN_VELOCITY_STEP = 0.1
+ANG_VELOCITY_STEP = 1
 ACTOR_VEL_CAP = 1
 
 def getKey(settings):
@@ -50,42 +51,41 @@ def constrain_speed(speed):
         return speed
 
 def main(model_name):
-    global disp, e, VELOCITY_STEP
+    global disp, e, LIN_VELOCITY_STEP, ANG_VELOCITY_STEP
 
     settings = termios.tcgetattr(sys.stdin)
 
     rospy.init_node('actor_controller')
-    pub = rospy.Publisher('/' + model_name + '_cmd_vel', Vector3, queue_size=10)
+    pub = rospy.Publisher('/' + model_name + '_cmd_vel', Twist, queue_size=10)
 
     status = 0
-    actor_x_vel = 0
-    actor_y_vel = 0
+    actor_ang_vel = 0
+    actor_lin_vel = 0
 
     try:
         print(disp)
         while(1):
             key = getKey(settings)
+            # forward/backward
             if key == 'w' :
-                actor_y_vel = constrain_speed(actor_y_vel + VELOCITY_STEP)
+                actor_lin_vel = constrain_speed(actor_lin_vel + LIN_VELOCITY_STEP)
                 status = status + 1
-                print("X velocity: %f || Y velocity: %f" % (actor_x_vel, actor_y_vel))
+                print("Linear velocity: %f" % (actor_lin_vel))
             elif key == 's' :
-                actor_y_vel = constrain_speed(actor_y_vel - VELOCITY_STEP)
+                actor_lin_vel = constrain_speed(actor_lin_vel - LIN_VELOCITY_STEP)
                 status = status + 1
-                print("X velocity: %f || Y velocity: %f" % (actor_x_vel, actor_y_vel))
+                print("Linear velocity: %f" % (actor_lin_vel))
+            # turning left/right
             elif key == 'a' :
-                actor_x_vel = constrain_speed(actor_x_vel - VELOCITY_STEP)
-                status = status + 1
-                print("X velocity: %f || Y velocity: %f" % (actor_x_vel, actor_y_vel))
+                actor_ang_vel = ANG_VELOCITY_STEP
             elif key == 'd' :
-                actor_x_vel = constrain_speed(actor_x_vel + VELOCITY_STEP)
-                status = status + 1
-                print("X velocity: %f || Y velocity: %f" % (actor_x_vel, actor_y_vel))
+                actor_ang_vel = -ANG_VELOCITY_STEP
             elif key == ' ' or key == 'x' :
-                actor_x_vel = 0
-                actor_y_vel = 0
+                actor_ang_vel = 0
+                actor_lin_vel = 0
                 print("Actor stopped.")
             else:
+                actor_ang_vel = 0
                 if (key == '\x03'):
                     break
 
@@ -93,10 +93,14 @@ def main(model_name):
                 print(disp)
                 status = 0
 
-            msg = Vector3()
-            msg.x = actor_x_vel
-            msg.y = actor_y_vel
-            msg.z = 0
+            msg = Twist()
+            msg.linear.x = 0
+            msg.linear.y = actor_lin_vel
+            msg.linear.z = 0
+            msg.angular.x = 0
+            msg.angular.y = 0
+            msg.angular.z = actor_ang_vel
+
 
             pub.publish(msg)
 
