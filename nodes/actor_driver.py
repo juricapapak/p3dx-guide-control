@@ -9,7 +9,7 @@ from gazebo_msgs.msg import ModelState
 VELOCITY_X = 0.0
 VELOCITY_Y = 0.0
 
-RATE = 25.0 # frequency of 'driver'
+RATE = 10.0 # frequency of 'driver'
 
 def cmd_vel_sub(data):
     global VELOCITY_X, VELOCITY_Y
@@ -37,7 +37,7 @@ def main(model_name, start_x, start_y):
         msg.model_name = model_name
         msg.pose.position.x = pos_x
         msg.pose.position.y = pos_y
-        msg.pose.position.z = 0
+        msg.pose.position.z = 1.05
 
         pub.publish(msg)
         driver_rate.sleep()

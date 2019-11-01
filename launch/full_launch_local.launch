@@ -31,9 +31,6 @@
     <arg name="actor_name" value="$(arg actor_name)"/>
     <arg name="start_x" value="8"/>
     <arg name="start_y" value="9.6"/>
-    <arg name="end_x" value="13.0"/>
-    <arg name="end_y" value="7.0"/>
-    <arg name="inc" value="0"/>
   </include>
 
   <node name="guide_controller" pkg="guide_control" type="guide_control.py" output="screen">
